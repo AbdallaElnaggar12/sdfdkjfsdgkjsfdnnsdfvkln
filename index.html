@@ -119,6 +119,16 @@
         </div>
 
         <div class="field">
+            <div class="label">TRN Number</div>
+            <input id="TRNNUMBER" value="">
+        </div>
+
+        <div class="field">
+            <div class="label">Company Location</div>
+            <input id="COMPANYLOCATION" value="">
+        </div>
+
+        <div class="field">
             <div class="label">Date From</div>
             <input id="DATEFROM" value="">
         </div>
@@ -126,6 +136,16 @@
         <div class="field">
             <div class="label">Date To</div>
             <input id="DATETO" value="">
+        </div>
+
+        <div class="field">
+            <div class="label">Price Before VAT</div>
+            <input id="PRICEBEFORE" value="">
+        </div>
+
+        <div class="field">
+            <div class="label">VAT Price</div>
+            <input id="VAT" value="">
         </div>
 
         <div class="field">
@@ -159,13 +179,41 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 <script>
+
+function calculatePrices() {
+
+    const priceBefore = parseFloat(document.getElementById("PRICEBEFORE").value);
+    const vatField = document.getElementById("VAT");
+    const priceField = document.getElementById("PRICE");
+
+    if (!isNaN(priceBefore)) {
+
+        if (vatField.value.trim() === "") {
+            vatField.value = (priceBefore * 0.05).toFixed(2);
+        }
+
+        if (priceField.value.trim() === "") {
+            const vatValue = parseFloat(vatField.value) || 0;
+            priceField.value = (priceBefore + vatValue).toFixed(2);
+        }
+    }
+}
+
 function getData() {
+
+    calculatePrices();
+
     return {
         COMPANYNAME: document.getElementById("COMPANYNAME").value,
         COMPANYNUMBER: document.getElementById("COMPANYNUMBER").value,
+        TRNNUMBER: document.getElementById("TRNNUMBER").value,
+        COMPANYLOCATION: document.getElementById("COMPANYLOCATION").value,
         DATEFROM: document.getElementById("DATEFROM").value,
         DATETO: document.getElementById("DATETO").value,
-        PRICE: document.getElementById("PRICE").value,
+
+        PRICEBEFORE: document.getElementById("PRICEBEFORE").value + " AED",
+        VAT: document.getElementById("VAT").value + " AED",
+        PRICE: document.getElementById("PRICE").value + " AED",
 
         VAR1: document.getElementById("VAR1").value,
         VAR2: document.getElementById("VAR2").value,
@@ -211,6 +259,7 @@ function generate() {
 
     reader.readAsArrayBuffer(file);
 }
+
 </script>
 
 </body>
