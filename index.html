@@ -199,6 +199,23 @@ function calculatePrices() {
     }
 }
 
+function sanitizeFileName(name) {
+
+    return name
+        .replace(/[<>:"\/\\|?*\x00-\x1F&]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function escapeXml(value) {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+}
+
 function getData() {
 
     calculatePrices();
@@ -247,14 +264,19 @@ function generate() {
         const data = getData();
 
         for (const key in data) {
-            xml = xml.replace(new RegExp(key, "g"), data[key]);
+            xml = xml.replace(
+                new RegExp(key, "g"),
+                escapeXml(data[key])
+            );
         }
 
         zip.file("word/document.xml", xml);
 
         const blob = zip.generate({ type: "blob" });
 
-        saveAs(blob, data.COMPANYNAME + ".docx");
+        const safeFileName = sanitizeFileName(data.COMPANYNAME);
+
+        saveAs(blob, safeFileName + ".docx");
     };
 
     reader.readAsArrayBuffer(file);
